@@ -2,13 +2,19 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
+
+import static java.nio.file.Files.*;
 
 public class RawFileReader {
 
@@ -26,6 +32,77 @@ public class RawFileReader {
     private static final String[] LETTREAL_HEADER_MAPPING = {"Letteral Location", "Replaced with"};
     private static final String[] FILTER_HEADER = {"Tag ID", "Description"};
     private static List dianosticFilterTags = new ArrayList();
+
+
+    //    public void moveFilesAfterPreprocessing(String inPath, String acrhivePath) {
+    public static void moveFilesAfterPreprocessing() {
+        String acrhivePath = "C:\\Manara-raw-data\\SHYB-97 Raw Data\\Manara Stations Acrhive Of Processed Data\\L0L\\";
+        String ipPath = "C:\\Manara-raw-data\\SHYB-97 Raw Data\\Manara Stations\\L0L\\";
+        String fileName = "L0L 20160507-0700AM to 20160507-1200PM.csv";
+        File acrhiveDir = new File(acrhivePath);
+        File sourceDir = new File(ipPath);
+        if (!acrhiveDir.exists()) {
+            acrhiveDir.mkdirs();
+            System.out.println("making acrhive Dir");
+        }
+        if (sourceDir.exists() && sourceDir.isDirectory()) {
+            File[] listOfFiles = sourceDir.listFiles();
+            if (listOfFiles != null) {
+                for (File child : listOfFiles) {
+                    child.renameTo(new File(acrhiveDir
+                            + "\\" + child.getName()));
+
+                }
+
+            }
+
+        }
+
+    }
+
+    public static void readFromExcel() {
+        HSSFWorkbook filename = null;
+        try {
+            //test file is located in your project path
+            FileInputStream fileIn = new FileInputStream("E:\\downloads\\mining.xls");
+
+            //read file
+            POIFSFileSystem fs = new POIFSFileSystem(fileIn);
+            filename = new HSSFWorkbook(fs);
+
+
+        } catch (Exception e) {
+        }
+        //HSSFSheet sheet = filename.getSheetAt(0);
+        HSSFSheet sheet = filename.getSheet("data");
+
+        //HSSFSheet sheet = filename.getSheet("sheet1");
+        Map<Double, String> TagNameIdMap = new HashMap<Double, String>();
+
+        for (int rowNumber = sheet.getFirstRowNum(); rowNumber < sheet.getLastRowNum(); rowNumber++) {
+            Row row = sheet.getRow(rowNumber);
+            if (row != null) {
+                Cell scope = row.getCell(1);
+                Cell catalog = row.getCell(2);
+                Cell Description = row.getCell(3);
+                Cell DB_TagName = row.getCell(4);
+                String scopeValue = scope.getStringCellValue();
+                String catalogValue = catalog.getStringCellValue();
+
+                if (scopeValue != null && scopeValue.equalsIgnoreCase("Manara")
+                        && catalogValue != null && catalogValue.equalsIgnoreCase("Diagnostic")) {
+                    TagNameIdMap.put(DB_TagName.getNumericCellValue(), Description.getStringCellValue());
+                }
+            }
+        }
+
+        if (TagNameIdMap.isEmpty()) {
+            System.out.println("No data found");
+        } else {
+            System.out.println("MAP : " + TagNameIdMap.toString());
+        }
+    }
+
 
     public static void getAllFiles(String ipPath, String opPath) {
         File curDir = new File(ipPath);
@@ -58,8 +135,7 @@ public class RawFileReader {
                             File newDir = new File(new File(opPath).getAbsolutePath() + "\\" + dirName);
                             if (!newDir.exists())
                                 newDir.mkdir();
-
-                            readNWriteCsvFile(curDir.getAbsolutePath() + "\\" + dirName + "\\" + entry.getName(), newDir + "\\" + entry.getName(), diagnosticTagsList);
+//                            readNWriteCsvFile(curDir.getAbsolutePath() + "\\" + dirName + "\\" + entry.getName(), newDir + "\\" + entry.getName(), diagnosticTagsList);
                         }
                     }
                     //read and give output back to main
