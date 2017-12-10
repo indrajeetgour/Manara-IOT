@@ -33,31 +33,30 @@ public class RawFileReader {
     private static final String[] FILTER_HEADER = {"Tag ID", "Description"};
     private static List dianosticFilterTags = new ArrayList();
 
+    private static String acrhivePath = "C:\\Manara-raw-data\\SHYB-97 Raw Data\\Manara Stations Acrhive Of Processed Data\\";
 
-    //    public void moveFilesAfterPreprocessing(String inPath, String acrhivePath) {
-    public static void moveFilesAfterPreprocessing() {
+    public static void moveFilesAfterPreprocessing(String sourceFolder, String acrhiveFolder, String fileName) {
+//    public static void moveFilesAfterPreprocessing() {
         String acrhivePath = "C:\\Manara-raw-data\\SHYB-97 Raw Data\\Manara Stations Acrhive Of Processed Data\\L0L\\";
         String ipPath = "C:\\Manara-raw-data\\SHYB-97 Raw Data\\Manara Stations\\L0L\\";
-        String fileName = "L0L 20160507-0700AM to 20160507-1200PM.csv";
-        File acrhiveDir = new File(acrhivePath);
-        File sourceDir = new File(ipPath);
+//        String fileName = "L0L 20160507-0700AM to 20160507-1200PM.csv";
+
+        File sourceDir = new File(sourceFolder);
+        File acrhiveDir = new File(acrhiveFolder);
+
         if (!acrhiveDir.exists()) {
             acrhiveDir.mkdirs();
-            System.out.println("making acrhive Dir");
         }
+
+        sourceDir.renameTo(new File(acrhiveDir + "\\" + fileName));
         if (sourceDir.exists() && sourceDir.isDirectory()) {
             File[] listOfFiles = sourceDir.listFiles();
             if (listOfFiles != null) {
                 for (File child : listOfFiles) {
-                    child.renameTo(new File(acrhiveDir
-                            + "\\" + child.getName()));
-
+//                    child.renameTo(new File(acrhiveDir + "\\" + child.getName()));
                 }
-
             }
-
         }
-
     }
 
     public static void readFromExcel() {
@@ -135,7 +134,8 @@ public class RawFileReader {
                             File newDir = new File(new File(opPath).getAbsolutePath() + "\\" + dirName);
                             if (!newDir.exists())
                                 newDir.mkdir();
-//                            readNWriteCsvFile(curDir.getAbsolutePath() + "\\" + dirName + "\\" + entry.getName(), newDir + "\\" + entry.getName(), diagnosticTagsList);
+                            readNWriteCsvFile(curDir.getAbsolutePath() + "\\" + dirName + "\\" + entry.getName(), newDir + "\\" + entry.getName(), diagnosticTagsList);
+                            moveFilesAfterPreprocessing(curDir.getAbsolutePath() + "\\" + dirName + "\\" + entry.getName(), new File(acrhivePath + "\\" + dirName).getAbsolutePath(), entry.getName());
                         }
                     }
                     //read and give output back to main
@@ -252,6 +252,7 @@ public class RawFileReader {
                     dataRecord.addAll(colValues);
                 }
                 csvFilePrinter.printRecord(dataRecord);
+//                moveFilesAfterPreprocessing();
             }
             System.out.println("successfully : createProcessedFile, CSV file was created !!!");
         } catch (Exception e) {
