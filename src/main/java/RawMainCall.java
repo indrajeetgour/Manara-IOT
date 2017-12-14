@@ -21,7 +21,11 @@ public class RawMainCall {
         System.out.println("\n Preprocess started :");
 //        RawFileReader.readNWriteCsvFile(fileName, fileNameOut);
 
-        RawFileReader.getAllFiles(ipPath, opPath);
+//        RawFileReader.getAllFiles(ipPath, opPath);
+
+//        RawFileReader.readFromExcel();
+
+
 //        RawFileReader.moveFilesAfterPreprocessing();
 
     }
