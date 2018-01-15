@@ -1,13 +1,20 @@
-import java.util.HashMap;
+import java.util.*;
 
-public class MappingClass extends HashMap<String, Integer> {
+public class MappingClass extends LinkedHashMap<String, Integer> {
+//public class MappingClass extends TreeMap<String, Integer> {
 
 
-    public Integer addToMap(String key){
+    public Integer addToMap(String key) {
         if (containsKey(key)) {
             return get(key);
-        }else{
-            return put(key, this.size()+1);
+        } else {
+//            List<Entry<String, Integer>> entries = new ArrayList<Entry<String, Integer>>(this.entrySet());
+
+
+//            Integer val = get(this.entrySet().toArray()) + 1;
+            return put(key, this.size() + 1);
+//            Map.Entry<String, Integer> lastentry = this.lastEntry();
+//            return put(key, lastentry.getValue() + 1);
         }
     }
 
@@ -19,6 +26,7 @@ public class MappingClass extends HashMap<String, Integer> {
             return super.put(key, value);
         }
     }
+
 
     @Override
     public String toString() {
