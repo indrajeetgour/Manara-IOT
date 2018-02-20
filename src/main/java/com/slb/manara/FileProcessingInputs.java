@@ -1,12 +1,20 @@
 package com.slb.manara;
 
+import com.google.common.collect.Multimap;
+
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
 public class FileProcessingInputs {
+    private static String mFileType;
+    private static String iFileType;
+    private static String manaraTagSheetName;
+    private static String manaraMeasurementFile;
+    boolean timestampConversionFlag;
     private Map<String, List<File>> inputFilesList;
     private List<String> diagnosticFilterTags;
+    private List<String> diagnosticIWICFilterTags;
     private String[] WELL_HEADER_MAPPING;
     private String[] STATIONIDENTIFIER_HEADER_MAPPING;
     private String[] headerList;
@@ -17,11 +25,108 @@ public class FileProcessingInputs {
     private List<String[]> allRecords;
     private String wellMappingFileName;
     private String tagMappingSheetName;
+    private String tagMappingIWICSheetName;
     private String tagsMappingFileName;
     private String tagsNameSheetName;
     private String stationIdentifierMappingFromFile;
     private String preProcessedOpDir;
     private String currProcessingFileName;
+    private String timestampUnitConvVal;
+    private String tagsNameIWICSheetName;
+    private String fileTypeFlag;
+    private Multimap<String, String> superSetOfAllTagsMultiMapManara;
+    private Multimap<String, String> superSetOfAllTagsMultiMapIWIC;
+    private String[] IWICIDENTIFIER_HEADER_MAPPING;
+    private String iWICIdentifierMappingFromFile;
+
+    public String getiWICIdentifierMappingFromFile() {
+        return iWICIdentifierMappingFromFile;
+    }
+
+    public void setiWICIdentifierMappingFromFile(String iWICIdentifierMappingFromFile) {
+        this.iWICIdentifierMappingFromFile = iWICIdentifierMappingFromFile;
+    }
+
+    public String[] getIWICIDENTIFIER_HEADER_MAPPING() {
+        return IWICIDENTIFIER_HEADER_MAPPING;
+    }
+
+    public void setIWICIDENTIFIER_HEADER_MAPPING(String[] IWICIDENTIFIER_HEADER_MAPPING) {
+        this.IWICIDENTIFIER_HEADER_MAPPING = IWICIDENTIFIER_HEADER_MAPPING;
+    }
+
+    public static String getManaraMeasurementFile() {
+        return manaraMeasurementFile;
+    }
+
+    public static void setManaraMeasurementFile(String manaraMeasurementFile) {
+        FileProcessingInputs.manaraMeasurementFile = manaraMeasurementFile;
+    }
+
+    public static String getManaraTagSheetName() {
+        return manaraTagSheetName;
+    }
+
+    public static void setManaraTagSheetName(String manaraTagSheetName) {
+        FileProcessingInputs.manaraTagSheetName = manaraTagSheetName;
+    }
+
+    public static String getmFileType() {
+        return mFileType;
+    }
+
+    public static void setmFileType(String mFileType) {
+        FileProcessingInputs.mFileType = mFileType;
+    }
+
+    public static String getiFileType() {
+        return iFileType;
+    }
+
+    public static void setiFileType(String iFileType) {
+        FileProcessingInputs.iFileType = iFileType;
+    }
+
+    public Multimap<String, String> getSuperSetOfAllTagsMultiMapManara() {
+        return superSetOfAllTagsMultiMapManara;
+    }
+
+    public void setSuperSetOfAllTagsMultiMapManara(Multimap<String, String> superSetOfAllTagsMultiMapManara) {
+        this.superSetOfAllTagsMultiMapManara = superSetOfAllTagsMultiMapManara;
+    }
+
+    public Multimap<String, String> getSuperSetOfAllTagsMultiMapIWIC() {
+        return superSetOfAllTagsMultiMapIWIC;
+    }
+
+    public void setSuperSetOfAllTagsMultiMapIWIC(Multimap<String, String> superSetOfAllTagsMultiMapIWIC) {
+        this.superSetOfAllTagsMultiMapIWIC = superSetOfAllTagsMultiMapIWIC;
+    }
+
+
+    public List<String> getDiagnosticIWICFilterTags() {
+        return diagnosticIWICFilterTags;
+    }
+
+    public void setDiagnosticIWICFilterTags(List<String> diagnosticIWICFilterTags) {
+        this.diagnosticIWICFilterTags = diagnosticIWICFilterTags;
+    }
+
+    public String getTagMappingIWICSheetName() {
+        return tagMappingIWICSheetName;
+    }
+
+    public void setTagMappingIWICSheetName(String tagMappingIWICSheetName) {
+        this.tagMappingIWICSheetName = tagMappingIWICSheetName;
+    }
+
+    public String getFileTypeFlag() {
+        return fileTypeFlag;
+    }
+
+    public void setFileTypeFlag(String fileTypeFlag) {
+        this.fileTypeFlag = fileTypeFlag;
+    }
 
     public String getCurrProcessingFileName() {
         return currProcessingFileName;
@@ -29,6 +134,14 @@ public class FileProcessingInputs {
 
     public void setCurrProcessingFileName(String currProcessingFileName) {
         this.currProcessingFileName = currProcessingFileName;
+    }
+
+    public String getTagsNameIWICSheetName() {
+        return tagsNameIWICSheetName;
+    }
+
+    public void setTagsNameIWICSheetName(String tagsNameIWICSheetName) {
+        this.tagsNameIWICSheetName = tagsNameIWICSheetName;
     }
 
     public String getPreProcessedOpDir() {
@@ -47,8 +160,6 @@ public class FileProcessingInputs {
         this.currLateralName = currLateralName;
     }
 
-    private String timestampUnitConvVal;
-    boolean timestampConversionFlag;
 
     public boolean isTimestampConversionFlag() {
         return timestampConversionFlag;
