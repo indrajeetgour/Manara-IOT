@@ -669,13 +669,32 @@ public class OP14RawFileParser {
         String timestampUnitConvVal = null;
         String timestampColumnNameFinalValue = null;
         String strWellName = fileProcessingInputs.getCurrWellName();
-        String currStationName = fileProcessingInputs.getCurrStationName();
+//        String currStationName = fileProcessingInputs.getCurrStationName();
+
+        /***
+         * Read second column of each file we read, getting iWICIdentifier which is common throughout the file, so read only second column
+         * At the end writing into final iWICIdentifier mapping csv for future reference
+         */
+        String iWICIdentifierColumnName = allRecords.get(0)[1];
+        String[] iWICIdentifierColumnNameList = iWICIdentifierColumnName.split("_");
+        String iWICIdentifierName = iWICIdentifierColumnNameList[0];
+        // second parameter is for well_id, which we are not passing right now, its just empty
+        iWICIdentifier.addToMap(iWICIdentifierName, "");
+        // iWICIMappingId is not in use currently, but if in future we needed iWICIMappingId from mapping file we can use iWICIMappingId.
+        // current we are just storing iWICIdentifier into mapping csv
+        String iWICIMappingId = String.valueOf(iWICIdentifier.get(iWICIdentifierName).getIdCol());
+        // Writing the final iWICIdentifier Name and Id mapping into iWICIdentifier mapping csv file, for each file read
+        try {
+            writeIntoMappingCSV(fileProcessingInputs.getiWICIdentifierMappingFromFile(), iWICIdentifier, fileProcessingInputs.getIWICIDENTIFIER_HEADER_MAPPING());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         /***
          * preparing the TIMESTAMP Column name, if conversion unit is there or not
          */
         String timeStampColumnName = allRecords.get(0)[0];
-//        String timeStampColumnName = allRecords.get(0)[0];
+
         if (timeStampColumnName.matches(".*\\d+.*")) { // this is, when timestamp col is having Conversion Unit attached to it like +11:30
             fileProcessingInputs.setTimestampConversionFlag(true);
             if (timeStampColumnName.split("\\(")[0].toLowerCase().contains("Timestamp".toLowerCase())) {
@@ -759,25 +778,6 @@ public class OP14RawFileParser {
             e.printStackTrace();
         }
 
-//
-//
-        // Just taken care, stationIdentifier is mapped only in case of Manara file not IWIC
-        // iWICIdentifier
-        String iWICIMappingId = "";
-        // If new station came, well id for that would always be empty, she cloud fill that
-        iWICIdentifier.addToMap(fileProcessingInputs.getCurrStationName(), "");
-        iWICIMappingId = String.valueOf(iWICIdentifier.get(currStationName).getIdCol());
-        /***
-         * Implementation 2
-         * Writing the final well and Station mapping files into csv file for each run read
-         */
-        try {
-            writeIntoMappingCSV(fileProcessingInputs.getiWICIdentifierMappingFromFile(), iWICIdentifier, fileProcessingInputs.getIWICIDENTIFIER_HEADER_MAPPING());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-//
-//
         /***
          * Making finalOPFileName ready by changing the final file name with mapping CSV to hide all wellName and station name from file name
          */
@@ -825,7 +825,6 @@ public class OP14RawFileParser {
             /***
              * Below code is for getting col A and B for each columns Unit conversion
              */
-
             // Read sheet IWIC_TagNameAliases to get the Unit conversion part A and B column
             tagsDetailsMultimap = createTagDetailsMap(fileProcessingInputs.getTagsMappingFileName(), fileProcessingInputs.getTagMappingIWICSheetName());
             // To know the max of sequence, of columns appeared in raw file for write into output schema sequence
@@ -847,58 +846,7 @@ public class OP14RawFileParser {
                     //input file header list filtered by Manara diagnostic tags
                     updatedHeader = makeHeaderAndUpdateMappingCSVIWIC(fileProcessingInputs);
                     // Checking which all parameter from raw file, is in Output schema tagName file or not
-/*
-                    int headerIndex = 0;
-//                    for (int headerIndex = 0; headerIndex < updatedHeader.size(); headerIndex++) {
-                    for (Integer key : updatedHeader.keySet()) {
-                        if (headerIndex == 0) {
-                            // Just to timstamp column mapping part
-                            if (String.valueOf(updatedHeader.get(key)).contains("Timestamp")) {
-                                outFileColumnMapping.put(headerIndex, String.valueOf(key));
-                            }
-                        } else {
-                            if (key > 24) {
-                                System.out.println("checkout");
-                            }
-                            if (allTagNamesMultiMap.containsValue(String.valueOf(updatedHeader.get(key)))) {
-                                // get the  tag id from inverted map
-                                Integer keyOfStaticSchema = Integer.parseInt(invertedMultimap.get(
-                                        String.valueOf(updatedHeader.get(key))).toString().replaceAll("\\[|\\]", ""));
-                                int pos = tagIdList.indexOf(String.valueOf(keyOfStaticSchema));
-                                //find on tag id and tag name from tagsDetailsMultimap
-                                if (tagsDetailsMultimap.containsKey(updatedHeader.get(key))) {
-                                    Collection<TagsDetails> tagDetails = tagsDetailsMultimap.get(updatedHeader.get(key));
-                                    UnitConvertDetailsMap.put(headerIndex, tagDetails.iterator().next());
-                                }
-                                outFileColumnMapping.put(headerIndex, String.valueOf(pos));
-                            }
-                        }
-                        headerIndex += 1;
-                    }
-*/
-                    /*
-                    for (int headerIndex = 0; headerIndex < updatedHeader.size(); headerIndex++) {
-                        if (headerIndex == 0) {
-                            // Just to timstamp column mapping part
-                            if (String.valueOf(updatedHeader.get(headerIndex)).contains("Timestamp")) {
-                                outFileColumnMapping.put(headerIndex, String.valueOf(headerIndex));
-                            }
-                        } else {
-                            if (allTagNamesMultiMap.containsValue(String.valueOf(updatedHeader.get(headerIndex)))) {
-                                // get the  tag id from inverted map
-                                Integer keyOfStaticSchema = Integer.parseInt(invertedMultimap.get(
-                                        String.valueOf(updatedHeader.get(headerIndex))).toString().replaceAll("\\[|\\]", ""));
-                                int pos = tagIdList.indexOf(String.valueOf(keyOfStaticSchema));
-                                //find on tag id and tag name from tagsDetailsMultimap
-                                if (tagsDetailsMultimap.containsKey(updatedHeader.get(headerIndex))) {
-                                    Collection<TagsDetails> tagDetails = tagsDetailsMultimap.get(updatedHeader.get(headerIndex));
-                                    UnitConvertDetailsMap.put(headerIndex, tagDetails.iterator().next());
-                                }
-                                outFileColumnMapping.put(headerIndex, String.valueOf(pos));
-                            }
-                        }
-                    }
-                    */
+                    // Getting max of updated header sequence
                     maxKey = Collections.max(updatedHeader.keySet());
                     for (int headerIndex = 0; headerIndex <= maxKey; headerIndex++) {
                         if (headerIndex == 0) {
@@ -928,13 +876,15 @@ public class OP14RawFileParser {
                     // Get static tagNameID not the indexID
                     Set<String> allTagIDFromStaticSchema = tagNamesMultiMap.keySet();
                     // Initializing the list with empty string, which will act as in tuple
-                    String[] colValues = new String[tagNamesMultiMap.size()];
+//                    String[] colValues = new String[tagNamesMultiMap.size()];
+                    String[] colValues = new String[maxKey];
+//                    Map<Integer, String> colValues = new LinkedHashMap<>(maxKey);
                     // This logic will take care for the assignment of raw parameters to final final level
                     int columnPos;
 //                    for (columnPos = 0; columnPos < allTagIDFromStaticSchema.size(); columnPos++) {
-                    for (columnPos = 0; columnPos <= (int)maxKey; columnPos++) {
-                        if (columnPos > 19) {
-                            System.out.println("Rukh bhai and check");
+                    for (columnPos = 0; columnPos <= maxKey; columnPos++) {
+                        if (columnPos > 25) {
+//                            System.out.println("Rukh bhai and check");
                         }
                         String tagIDVal = outFileColumnMapping.get(columnPos).trim();
                         String tspVal;
@@ -976,24 +926,31 @@ public class OP14RawFileParser {
                                     logger.error("TimeStamp conversion code is failed Due to : " + e);
                                 }
                                 colValues[Integer.parseInt(tagIDVal)] = convertedTSVal;
+//                                colValues.put(Integer.parseInt(tagIDVal), convertedTSVal);
                             } else {
                                 tspVal = raw[columnPos];
-                                if (!tspVal.equals("")) {
-                                    System.out.println("check");
-                                }
                                 TagsDetails objTagsDetails = UnitConvertDetailsMap.get(columnPos);
                                 if (tspVal != null && !tspVal.equals("") && tspVal.matches("[1-9]\\d*(\\.\\d+)?")) {
                                     Double finalConvertedVal = (Double.parseDouble(tspVal) * Double.parseDouble(objTagsDetails.getTagUnitConversionA())) + Double.parseDouble(objTagsDetails.getTagUnitConversionB());
+//                                    colValues.put(Integer.parseInt(tagIDVal),String.valueOf(finalConvertedVal));
                                     colValues[Integer.parseInt(tagIDVal)] = String.valueOf(finalConvertedVal);
                                 } else {
+//                                    colValues.put(Integer.parseInt(tagIDVal), tspVal);
                                     colValues[Integer.parseInt(tagIDVal)] = tspVal;
                                 }
                             }
                         }
+//                        System.out.println("columnPos : "+columnPos);
                     }
-//                    colValues[columnPos] = wellMappingId;
+                    if (columnPos == 28)
+                        System.out.println("columnPos : " + columnPos + " : " + Arrays.asList(colValues) + " : " + colValues.length);
+                    else
+                        System.out.println("columnPos not 28 : " + columnPos + " : " + Arrays.asList(colValues) + " : " + colValues.length);
+                    colValues[columnPos - 3] = wellMappingId;
+//                    colValues.put(columnPos,wellMappingId);
                     // Fill stationId only for Manara file
 //                    colValues[columnPos + 1] = iWICIMappingId;
+//                    dataRecord = colValues.values().toArray(new String[maxKey]);
                     dataRecord = colValues;
                 }
                 csvWriter.writeNext(dataRecord);
@@ -1282,9 +1239,6 @@ public class OP14RawFileParser {
                     // OP14 manara raw input parsing starts here
                     createProcessedFileManara(fileProcessingInputs);
 
-                    // THIS CAN BE MOVED OUT OF THIS BLOCK< AS IT IS GLOBAL
-                    // Can we pass both ip and archive path including file name, will check the archive parent path in created or not before pushing/moving data
-                    moveFilesAfterPreprocessing(sourceFileAbsoluteDir, getArchivedRawFileAbsoluteDir, rawFileName);
 
                 } else {
                     if (rawFileName.contains("IWIC")) { // CHECK FOR MSU ALSO ???
@@ -1296,6 +1250,11 @@ public class OP14RawFileParser {
                         createProcessedFileIWIC(fileProcessingInputs);
                     }
                 }
+                /***
+                 * Moving processing file into archival dir one by one as we process them
+                 * Can we pass both ip and archive path including file name, will check the archive parent path in created or not before pushing/moving data
+                 */
+                moveFilesAfterPreprocessing(sourceFileAbsoluteDir, getArchivedRawFileAbsoluteDir, rawFileName);
             }
         }
         return outputCode;
