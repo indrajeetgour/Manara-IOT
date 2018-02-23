@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 public class OP14Launcher {
+
+
     // Common variable throughout the program
     final static Logger logger = Logger.getLogger(OP14Launcher.class);
     private static final String[] WELL_HEADER_MAPPING = {"WELL_NAME", "WELL_ID", "TIME_ZONE"};
@@ -43,6 +45,30 @@ public class OP14Launcher {
     boolean localVariableFlag = true;
 
     public static void main(String[] args) {
+        /*
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("local-config.properties");
+            // load a properties file
+            prop.load(input);
+            // get the property value and print it out
+            System.out.println(":::::::::::"+prop.getProperty("tagMappingSheetName"));
+            System.out.println("::");
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+*/
 
         System.out.println("\nManara raw files Pre-processing Started : \n");
         long start = System.nanoTime(); // its for get the start time of the process
@@ -75,12 +101,12 @@ public class OP14Launcher {
         try {
             // Just to get all the possibility of disgnostic parameters using Manara SRS007 and TagNamesAlias files
             diagnosticFilterTagsManara = op14RawFileReader.getDiagnosticFilterTagsManara(fileProcessingInputs);
-//            diagnosticFilterTagsManara = op14RawFileReader.getDiagnosticFilterTags(manaraMeasurementFile, manaraTagSheetName, tagsMappingFile, tagMappingSheetName, "Manara");
-            fileProcessingInputs.setDiagnosticFilterTags(diagnosticFilterTagsManara);
+//            diagnosticFilterTagsManara = op14RawFileReader.getDiagnosticFilterTagsManara(manaraMeasurementFile, manaraTagSheetName, tagsMappingFile, tagMappingSheetName, "Manara");
+            fileProcessingInputs.setDiagnosticFilterTagsManara(diagnosticFilterTagsManara);
 
             // Just to get all the possibility of disgnostic parameters using Manara SRS007 and IWIC_TagNameAliases files
             diagnosticFilterTagsIWIC = op14RawFileReader.getDiagnosticFilterTagsIWIC(fileProcessingInputs);
-//            diagnosticFilterTagsIWIC = op14RawFileReader.getDiagnosticFilterTags(manaraMeasurementFile, manaraTagSheetName, tagsMappingFile, tagMappingIWICSheetName, "IWIC");
+//            diagnosticFilterTagsIWIC = op14RawFileReader.getDiagnosticFilterTagsManara(manaraMeasurementFile, manaraTagSheetName, tagsMappingFile, tagMappingIWICSheetName, "IWIC");
             fileProcessingInputs.setDiagnosticIWICFilterTags(diagnosticFilterTagsIWIC);
 
             // Getting all the files list with WellName as key
@@ -95,7 +121,6 @@ public class OP14Launcher {
             logger.error("ERROR in class RawMainCall : inputFilesList is NULL or empty ");
             System.exit(0);
         }
-
 
 
         try {

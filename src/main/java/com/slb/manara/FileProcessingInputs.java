@@ -185,11 +185,11 @@ public class FileProcessingInputs {
         this.inputFilesList = inputFilesList;
     }
 
-    public List<String> getDiagnosticFilterTags() {
+    public List<String> getDiagnosticFilterTagsManara() {
         return diagnosticFilterTags;
     }
 
-    public void setDiagnosticFilterTags(List<String> diagnosticFilterTags) {
+    public void setDiagnosticFilterTagsManara(List<String> diagnosticFilterTags) {
         this.diagnosticFilterTags = diagnosticFilterTags;
     }
 
