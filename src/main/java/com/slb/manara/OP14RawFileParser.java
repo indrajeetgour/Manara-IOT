@@ -294,8 +294,8 @@ public class OP14RawFileParser {
             for (int i = 0; i < allRecords.size(); i++) {
                 String[] row = allRecords.get(i);
                 if (i > 0) {
-//                mappingList/wellName is reference of MappingClass
-//                below put will going to add only new well/lateral into maps its and custom maps implementation in MappingClass
+//                mappingList/wellName is reference of SHYBMappingClass
+//                below put will going to add only new well/lateral into maps its and custom maps implementation in SHYBMappingClass
                     mappingList.put(row[0], Integer.parseInt(row[1]), row[2]);
                 }
             }
@@ -679,7 +679,8 @@ public class OP14RawFileParser {
         String[] iWICIdentifierColumnNameList = iWICIdentifierColumnName.split("_");
         String iWICIdentifierName = iWICIdentifierColumnNameList[0];
         // second parameter is for well_id, which we are not passing right now, its just empty
-        iWICIdentifier.addToMap(iWICIdentifierName, "");
+        iWICIdentifier.addToMap(iWICIdentifierName, String.valueOf(wellName.get(strWellName).getIdCol()));
+//        iWICIdentifier.addToMap(iWICIdentifierName, "");
         // iWICIMappingId is not in use currently, but if in future we needed iWICIMappingId from mapping file we can use iWICIMappingId.
         // current we are just storing iWICIdentifier into mapping csv
         String iWICIMappingId = String.valueOf(iWICIdentifier.get(iWICIdentifierName).getIdCol());
@@ -1225,9 +1226,9 @@ public class OP14RawFileParser {
                 fileProcessingInputs.setCurrProcessingFileName(rawFileName);
                 //Raw input file absolute path with the file name include
                 String sourceFileAbsoluteDir = inputFile.toString();
-                String getArchivedRawFileAbsoluteDir = sourceFileAbsoluteDir.replaceAll("THM Data OP-14 ENL", "THM Data OP-14 ENL Archive Data");
+                String getArchivedRawFileAbsoluteDir = sourceFileAbsoluteDir.replaceAll("THM Data OP-14 ENL", "THM Data OP-14 ENL-Archive-data");
                 // Making output pre-process directory
-                String processedOpDir = inputFile.toString().replaceAll("THM Data OP-14 ENL", "THM Data OP-14 ENL Pre-processed Data");
+                String processedOpDir = inputFile.toString().replaceAll("THM Data OP-14 ENL", "THM Data OP-14 ENL-Preprocessed-data");
 
                 // Check pre-process directory parent is created or not, if not then create it
                 File preProcessedOpDir = new File(processedOpDir).getParentFile();
@@ -1254,7 +1255,7 @@ public class OP14RawFileParser {
                     String currStationName = rawFileName.split("-")[3];
                     fileProcessingInputs.setCurrStationName(currStationName);
 
-                    // Setting Current Lateral name
+                    // Setting Current Lateral or you can say station only with different name
                     String currLateralName = rawFileName.split("-")[2];
                     fileProcessingInputs.setCurrLateralName(currLateralName);
 
@@ -1288,12 +1289,15 @@ public class OP14RawFileParser {
         // Read well csv mapping file and get data into new List with only distinct well with mapping id
         List wallMapList = readCsvFile(fileProcessingInputs.getWellMappingFileName());
         createMappingList(wallMapList, wellName);
-        // Read Lateral csv mapping file and get data into new List with only distinct lateral with mapping id
+
+        // Read station csv mapping file and get data into new List with only distinct with mapping id
         List stationIdentifierList = readCsvFile(fileProcessingInputs.getStationIdentifierMappingFromFile());
         createMappingList(stationIdentifierList, stationIdentifier);
+
         // Read Iwic csv mapping file and get data into new List with only distinct Iwic with mapping id
         List iWICIdentifierList = readCsvFile(fileProcessingInputs.getiWICIdentifierMappingFromFile());
         createMappingList(iWICIdentifierList, iWICIdentifier);
+
     }
 }
 

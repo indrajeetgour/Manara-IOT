@@ -25,50 +25,25 @@ public class OP14Launcher {
     /***
      * Below variable for local run use
      */
-    private static String wellMappingFileName = "C:\\Manara-raw-data\\mapping-inputs-files\\updated-one\\Mapping-files\\WellMapping.csv";
-    private static String stationIdentifierMappingFromFile = "C:\\Manara-raw-data\\mapping-inputs-files\\updated-one\\Mapping-files\\StationIdentifierMapping.csv";
-    private static String iWICIdentifierMappingFromFile = "C:\\Manara-raw-data\\mapping-inputs-files\\updated-one\\Mapping-files\\IWICIdentifierMapping.csv";
+//    private static String wellMappingFileName = "C:\\Manara-raw-data\\mapping-inputs-files\\updated-one\\Mapping-files\\WellMapping.csv";
+//    private static String stationIdentifierMappingFromFile = "C:\\Manara-raw-data\\mapping-inputs-files\\updated-one\\Mapping-files\\StationIdentifierMapping.csv";
+//    private static String iWICIdentifierMappingFromFile = "C:\\Manara-raw-data\\mapping-inputs-files\\updated-one\\Mapping-files\\IWICIdentifierMapping.csv";
 
     /***
      * Below variable is used for CentOS run only
      */
-//    private static String wellMappingFileName = "/home/manarauser/mapping-inputs-files/updated-one/Mapping-files/WellMapping.csv";
-//    private static String stationIdentifierMappingFromFile = "/home/manarauser/mapping-inputs-files/updated-one/Mapping-files/StationIdentifierMapping.csv";
-//    private static String ipPathOP14 = "/home/manarauser/THM Data OP-14 ENL/";
-//    private static String tagsMappingFile = "/home/manarauser/mapping-inputs-files/updated-one/Mapping-files/TagNamesAndAliases_2018_01_31.xlsx";
-//    private static String manaraMeasurementFile = "/home/manarauser/mapping-inputs-files/updated-one/Manara_SRS007_1_10_RTAC_public_measurements_definition.xlsx";
-    private static String ipPathOP14 = "C:\\Manara-raw-data\\THM Data OP-14 ENL\\";
+    private static String wellMappingFileName = "/home/manarauser/mapping-inputs-files/updated-one/Mapping-files/WellMapping.csv";
+    private static String stationIdentifierMappingFromFile = "/home/manarauser/mapping-inputs-files/updated-one/Mapping-files/StationIdentifierMapping.csv";
+    private static String iWICIdentifierMappingFromFile = "/home/manarauser/mapping-inputs-files/updated-one/Mapping-files/IWICIdentifierMapping.csv";
+    private static String ipPathOP14 = "/home/manarauser/THM Data OP-14 ENL/";
+    private static String tagsMappingFile = "/home/manarauser/mapping-inputs-files/updated-one/Mapping-files/TagNamesAndAliases_2018_01_31.xlsx";
+    private static String manaraMeasurementFile = "/home/manarauser/mapping-inputs-files/updated-one/Manara_SRS007_1_10_RTAC_public_measurements_definition.xlsx";
+//    private static String ipPathOP14 = "C:\\Manara-raw-data\\THM Data OP-14 ENL\\";
     // New Output schema is available in this TagNamesAndAliases file
-    private static String tagsMappingFile = "C:\\Manara-raw-data\\mapping-inputs-files\\updated-one\\Mapping-files\\TagNamesAndAliases_2018_01_31.xlsx";
-    private static String manaraMeasurementFile = "C:\\Manara-raw-data\\mapping-inputs-files\\updated-one\\Manara_SRS007_1_10_RTAC_public_measurements_definition.xlsx";
-    boolean serverVariableFlag = false;
-    boolean localVariableFlag = true;
+//    private static String tagsMappingFile = "C:\\Manara-raw-data\\mapping-inputs-files\\updated-one\\Mapping-files\\TagNamesAndAliases_2018_01_31.xlsx";
+//    private static String manaraMeasurementFile = "C:\\Manara-raw-data\\mapping-inputs-files\\updated-one\\Manara_SRS007_1_10_RTAC_public_measurements_definition.xlsx";
 
     public static void main(String[] args) {
-        /*
-        Properties prop = new Properties();
-        InputStream input = null;
-        try {
-            input = new FileInputStream("local-config.properties");
-            // load a properties file
-            prop.load(input);
-            // get the property value and print it out
-            System.out.println(":::::::::::"+prop.getProperty("tagMappingSheetName"));
-            System.out.println("::");
-
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-*/
 
         System.out.println("\nManara raw files Pre-processing Started : \n");
         long start = System.nanoTime(); // its for get the start time of the process
@@ -93,7 +68,7 @@ public class OP14Launcher {
 //        RawFileReader.getAllFiles(ipPath, opPath);
 //        Below code is for newly formatted OP-14 Well and all the future well
         OP14RawFileParser op14RawFileReader = new OP14RawFileParser();
-//        op14RawFileReader.createWellAndStationMapping(wellMappingFileName,stat);
+//        op14RawFileReader.createWellAndLateralMapping(wellMappingFileName,stat);
         Map<String, List<File>> inputFilesList = null;
         List<String> diagnosticFilterTagsManara = null;
         List<String> diagnosticFilterTagsIWIC = null;
@@ -118,7 +93,7 @@ public class OP14Launcher {
         }
 
         if (inputFilesList == null || inputFilesList.size() == 0) {
-            logger.error("ERROR in class RawMainCall : inputFilesList is NULL or empty ");
+            logger.warn("Not Raw files found for processing in class OP14Launcher : inputFilesList is NULL or empty !!");
             System.exit(0);
         }
 
